@@ -2,6 +2,8 @@ import pygame
 import sys
 from bullet import Bullet
 from inv import Inv
+import time
+
 
 def events(screen, gun, bullets):
     # обработка событий
@@ -25,7 +27,6 @@ def events(screen, gun, bullets):
             elif event.key == pygame.K_a:
                 gun.mleft = False
 
-
 def update(bg_color, screen, gun, invs, bullets):
     # обновление экрана
     screen.fill(bg_color)
@@ -35,16 +36,40 @@ def update(bg_color, screen, gun, invs, bullets):
     invs.draw(screen)
     pygame.display.flip()
 
-def update_bullets(bullets):
+def update_bullets(screen, invs, bullets):
     # обновлять позиции пуль
     bullets.update()
     for bullet in bullets.copy():
         if bullet.rect.bottom <= 0:
             bullets.remove(bullet)
+    collisions = pygame.sprite.groupcollide(bullets, invs, True, True)
+    if len(invs) == 0:
+        bullets.empty()
+        create_army(screen, invs)
 
-def update_invs(invs):
+def gun_kill(stats, screen, gun, invs, bullets):
+    # столкновение пушки и армии
+    stats.guns_left -= 1
+    invs.empty()
+    bullets.empty()
+    create_army(screen, invs)
+    gun.create_gun()
+    time.sleep(1)
+
+def update_invs(stats, screen, gun, invs, bullets):
     # обновляет позицию пришельцев
     invs.update()
+    if pygame.sprite.spritecollideany(gun, invs):
+        gun_kill(stats, screen, gun, invs, bullets)
+    invs_check(stats, screen, gun, invs, bullets)
+
+def invs_check(stats, screen, gun, invs, bullets):
+    # проверка - добралась ли арми я до конца экрана?
+    screen_rect = screen.get_rect()
+    for inv in invs.sprites():
+        if inv.rect.bottom >= screen_rect.bottom:
+            gun_kill(stats, screen, gun, invs, bullets)
+            break
 
 def create_army(screen, invs):
     # создание армии клонов
