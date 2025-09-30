@@ -2,6 +2,7 @@ import pygame
 import sys
 from bullet import Bullet
 
+
 def events(screen, gun, bullets):
     # обработка событий
     for event in pygame.event.get():
@@ -32,6 +33,10 @@ def update(bg_color, screen, gun, bullets):
         bullet.draw_bullet()
     gun.output()
     pygame.display.flip()
-    
+
 def update_bullets(bullets):
-    # доделать
+    # обновлять позиции пуль
+    bullets.update()
+    for bullet in bullets.copy():
+        if bullet.rect.bottom <= 0:
+            bullets.remove(bullet)
