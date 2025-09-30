@@ -7,7 +7,7 @@ class Gun():
         # инициализация пушки
 
         self.screen = screen
-        self.image = pygame.image.load('imgs/pixil-frame-0.png')
+        self.image = pygame.image.load('imgs/gun.png')
         self.rect = self.image.get_rect()
         self.screen_rect = screen.get_rect()
         self.rect.centerx = self.screen_rect.centerx
